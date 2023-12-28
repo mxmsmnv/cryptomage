@@ -9,8 +9,11 @@ function encryptAndRenameFile($originalFilename, $key)
     // Generate IV with length of 16 bytes
     $iv = substr(md5($key), 0, 16);
 
-    // Generate a new file name using encryption
-    $encryptedName = openssl_encrypt($originalFilename, 'aes-256-cbc', md5($key), 0, $iv);
+    // Separate the base filename from the extension
+    $filenameWithoutExtension = pathinfo($originalFilename, PATHINFO_FILENAME);
+
+    // Generate a new file name using encryption for the base filename
+    $encryptedName = openssl_encrypt($filenameWithoutExtension, 'aes-256-cbc', md5($key), 0, $iv);
 
     // Replace slashes in the filename because they are interpreted as directory delimiters
     $encryptedName = str_replace('/', '-', $encryptedName);
@@ -25,11 +28,11 @@ function encryptAndRenameFile($originalFilename, $key)
     }
 }
 
-// Read all files with extensions .jpg, .jpeg and .png in the current folder
+// Read all files with extensions .jpg, .jpeg, and .png in the current folder
 $files = glob('*.{jpg,jpeg,png}', GLOB_BRACE);
 
 if (empty($files)) {
-    echo "There are no files with the extensions .jpg, .jpeg and .png in the current folder\n";
+    echo "There are no files with the extensions .jpg, .jpeg, and .png in the current folder\n";
 } else {
     foreach ($files as $file) {
         encryptAndRenameFile($file, $key);
